@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>データ送信フォーム</title>
+</head>
+<body>
+  <h1>データ送信</h1>
+  <form id="dataForm">
+    <label for="id">ID:</label>
+    <input type="text" name="id" required /><br /><br />
+    <label for="q1">Q1 (整数):</label>
+    <input type="number" name="q1" required /><br /><br />
+    <button type="submit">送信</button>
+  </form>
+  <p id="responseMessage"></p>
+
+  <script>
+    document.getElementById('dataForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const form = event.target;
+      const formData = new FormData(form);
+      const params = new URLSearchParams(formData);
+
+      // ← ここにGASのウェブアプリURLを貼り付けてください
+      const endpoint = "https://script.google.com/macros/s/AKfycbwmQ6bAolqcU01H1wn-BTukuJR5npDmd1AK6CTChIlpBRUO0bWlXOyGHSQyjE9yRPqP5A/exec";
+
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: params
+        });
+
+        const text = await response.text();
+        if (response.ok) {
+          document.getElementById("responseMessage").textContent = "送信成功: " + text;
+        } else {
+          document.getElementById("responseMessage").textContent = "送信失敗: " + text;
+        }
+      } catch (error) {
+        document.getElementById("responseMessage").textContent = "エラー: " + error;
+      }
+    });
+  </script>
+</body>
+</html>
